@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1 th:text="${#authentication.getPrincipal().fullName}"></h1>
+    <h1>403 ACCESS DENIED</h1>
+    <form th:action="@{'/vyhod'}" method="post">
+        <button>SIGN OUT</button>
+    </form>
+</body>
+</html>

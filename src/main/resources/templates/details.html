@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body onload="loadComments()">
+    <h1>WELCOME TO SECURITY PROJECT</h1>
+    <span sec:authorize = "isAuthenticated()">YOU ARE ONLINE</span>
+    <a th:href="@{'/enter'}">SIGN IN</a>
+    <a th:href="@{'/register'}">SIGN UP</a>
+
+    <div style="min-height: 800px;" th:if="${news != null}">
+        <input type="hidden" id="newsId" th:value="${news.id}">
+        <h1 th:text="${news.title}"></h1>
+        <p th:text="${news.content}"></p>
+        <p th:text="${news.postDate}"></p>
+        <p>POSTED BY <span th:text="${news.author.fullName}"></span></p>
+        <hr>
+        <div id="commentsDiv">
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <textarea id="commentArea"></textarea>
+            <button onclick="toAddComment()">ADD COMMENT</button>
+        </div>
+        <script type="text/javascript">
+            function loadComments(){
+                var newsIdValue = document.getElementById("newsId").value;
+                const xhttp = new XMLHttpRequest();
+                xhttp.onload = function(){
+                    const result = this.responseText;
+                    var commentsList = JSON.parse(result);
+                    console.log(result);
+                    console.log(commentsList);
+                    console.log(commentsList.length);
+                    var htmlCode = "";
+                    for (i=0;i<commentsList.length;i++){
+                        htmlCode += "<div>";
+                        htmlCode += "<h3>" + commentsList[i]["comment"] + "</h3>";
+                        htmlCode += "<strong>POSTED BY " + commentsList[i]["author"]["fullName"] + "</strong>";
+                        htmlCode += "<hr>";
+                        htmlCode += "</div>";
+                    }
+                    document.getElementById("commentsDiv").innerHTML = htmlCode;
+                }
+                xhttp.open("GET","/api/comments/" + newsIdValue);
+                xhttp.send();
+            }
+            function toAddComment(){
+                var newsIdValue = document.getElementById("newsId").value;
+                var commentsObj = {
+                    "comment": document.getElementById("commentArea").value,
+                    "newsId": newsIdValue
+                };
+                var post = JSON.stringify(commentsObj);
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('POST', "/api/comments", true);
+                xhr.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+                xhr.send(post);
+
+                xhr.onload = function (){
+                    if(xhr.status === 201){
+                        loadComments();
+                        document.getElementById("commentArea").value = "";
+                    }
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

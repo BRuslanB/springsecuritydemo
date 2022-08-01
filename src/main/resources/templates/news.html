@@ -1,0 +1,42 @@
+    <!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1 th:text="${#authentication.getPrincipal().fullName}"></h1>
+    <form th:action="@{'/vyhod'}" method="post">
+        <button>SIGN OUT</button>
+    </form>
+    <br>
+    <form th:action="@{'/addnews'}" method="post">
+        TITLE: <input type="text" name="title">
+        <br><br>
+        CONTENT: <textarea name="content"></textarea>
+        <button>ADD NEWS</button>
+    </form>
+    <div>
+        <table style="padding: 10px;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>TITLE</th>
+                    <th>CONTENT</th>
+                    <th>POST DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="news : ${newsList}">
+                    <td th:text="${news.id}"></td>
+                    <td th:text="${news.title}"></td>
+                    <td th:text="${news.content}"></td>
+                    <td th:text="${news.postDate}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

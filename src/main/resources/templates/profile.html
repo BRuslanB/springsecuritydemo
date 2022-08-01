@@ -1,0 +1,28 @@
+    <!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a th:href="@{'/'}">HOME</a>
+    <h1 th:text="${#authentication.getPrincipal().fullName}"></h1>
+    <a th:href="@{'/adminpanel'}" sec:authorize="hasAnyRole('ROLE_ADMIN')">ADMIN PANEL</a>
+    <a th:href="@{'/news'}" sec:authorize="hasAnyRole('ROLE_ADMIN')">NEWS</a>
+    <a th:href="@{'/teacherpanel'}" sec:authorize="hasAnyRole('ROLE_TEACHER')">TEACHER PANEL</a>
+    <br><br>
+
+    <form th:action="@{'/updatepassword'}" method="post">
+        OLD PASSWORD: <input type="password" name="old_password">
+        NEW PASSWORD: <input type="password" name="new_password">
+        REPEAT NEW PASSWORD: <input type="password" name="re_new_password">
+        <button>UPDATE PASSWORD</button>
+    </form>
+
+    <form th:action="@{'/vyhod'}" method="post">
+        <button>SIGN OUT</button>
+    </form>
+</body>
+</html>

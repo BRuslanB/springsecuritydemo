@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+<body onload="loadNews()">
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>TITLE</th>
+                            <th>CONTENT</th>
+                            <th>POST DATE</th>
+                        </tr>    
+                    </thead>
+                    <tbody id=newsContent>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+    function loadNews() {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function(){
+            const result = this.responseText;
+            var newsList = JSON.parse(result);
+            console.log(result);
+            console.log(newsList);
+            console.log(newsList.length);
+            var htmlCode = "";
+            for (i=0;i<newsList.length;i++){
+                htmlCode += "<tr>";
+                htmlCode += "<td>" + newsList[i]["id"] + "</td>";
+                htmlCode += "<td>" + newsList[i]["title"] + "</td>";
+                htmlCode += "<td>" + newsList[i]["content"] + "</td>";
+                htmlCode += "<td>" + newsList[i]["postDate"] + "</td>";
+                htmlCode += "</tr>";
+            }
+            document.getElementById("newsContent").innerHTML = htmlCode;
+        }
+        xhttp.open("GET","http://localhost:8000/api/news");
+        xhttp.send();
+    }
+</script>
+</html>

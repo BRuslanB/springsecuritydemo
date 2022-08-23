@@ -3,31 +3,43 @@ package kz.bitlab.javapro.security.springsecuritydemo.api;
 import kz.bitlab.javapro.security.springsecuritydemo.dto.NewsDTO;
 import kz.bitlab.javapro.security.springsecuritydemo.model.News;
 import kz.bitlab.javapro.security.springsecuritydemo.model.User;
+import kz.bitlab.javapro.security.springsecuritydemo.services.FileUploadService;
 import kz.bitlab.javapro.security.springsecuritydemo.services.NewsService;
 import kz.bitlab.javapro.security.springsecuritydemo.services.UserService;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
 @Controller
 public class HomeController {
 
+    @Value("${uploadURL}")
+    private String fileUploadURL;
+
     @Autowired
     private UserService userService;
 
     @Autowired
     private NewsService newsService;
+
+    @Autowired
+    private FileUploadService fileUploadService;
 
     @GetMapping("/enter")
     public String enterPage(Model model) {
@@ -123,5 +135,32 @@ public class HomeController {
         news.setAuthor(getCurrentUser());
         newsService.addNews(news);
         return "redirect:/news";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/uploadava")
+    public String uploadAva(@RequestParam(name = "user_avatar") MultipartFile file){
+        if (file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png")){
+            fileUploadService.uploadUserAva(file, getCurrentUser());
+        }
+        return "redirect:/profile";
+    }
+
+    @GetMapping(value = "/avatar/{url}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public @ResponseBody byte[] avatar(@PathVariable(name = "url", required = false) String url) throws IOException{
+        String picURL = fileUploadURL + "default.jpg";
+        if (url != null){
+            picURL = fileUploadURL +  url + ".jpg";
+        }
+        InputStream in;
+        try{
+            ClassPathResource classPathResource = new ClassPathResource(picURL);
+            in = classPathResource.getInputStream();
+        }catch(Exception e){
+            picURL = fileUploadURL + "default.jpg";
+            ClassPathResource classPathResource = new ClassPathResource(picURL);
+            in = classPathResource.getInputStream();
+        }
+        return IOUtils.toByteArray(in);
     }
 }

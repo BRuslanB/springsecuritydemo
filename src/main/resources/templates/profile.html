@@ -21,6 +21,17 @@
         <button>UPDATE PASSWORD</button>
     </form>
 
+    <br><br>
+
+    <img th:src="${'/avatar/' + #authentication.getPrincipal().avatarUrl}" width="300px">
+
+    <form th:action="@{'/uploadava'}" method="post" enctype="multipart/form-data">
+        FILE: <input type="file" name="user_avatar">
+        <button>UPLOAD</button>
+    </form>
+
+    <br><br>
+
     <form th:action="@{'/vyhod'}" method="post">
         <button>SIGN OUT</button>
     </form>
